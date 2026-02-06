@@ -1,0 +1,22 @@
+{
+  "name": "tailwindcss-preflight",
+  "version": "1.0.1",
+  "description": "A modern and opinionated alternative to CSS resets",
+  "license": "MIT",
+  "style": "preflight.css",
+  "repository": "https://github.com/grievouz/tailwindcss-preflight.git",
+  "bugs": "https://github.com/grievouz/tailwindcss-preflight/issues",
+  "homepage": "https://github.com/grievouz/tailwindcss-preflight#readme",
+  "files": [
+    "LICENSE",
+    "LICENSE-preflight.txt",
+    "preflight.css"
+  ],
+  "keywords": [
+    "normalize",
+    "css",
+    "reset",
+    "browser",
+    "style"
+  ]
+}
