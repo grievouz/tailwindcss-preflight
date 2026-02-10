@@ -6,52 +6,34 @@
 	<i>- <a href="https://tailwindcss.com/docs/preflight">Tailwind.com</a></i>
 </div>
 
-## ⚙️ Installation
+## Usage
 
-Using <a href="https://www.npmjs.com/">npm</a>:
-
-```properties
-npm install tailwindcss-preflight
-```
-Using <a href="https://yarnpkg.com/">yarn</a>:
-
-```properties
-yarn add tailwindcss-preflight
+```html
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss-preflight@1.1.1/preflight.min.css" rel="stylesheet" />
 ```
 
-## 📖 Usage
+## Installation
 
-Using <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@import">CSS imports</a>:
-```css
-@import 'tailwindcss-preflight/preflightcss.css';
+```properties
+npm install tailwindcss-preflight --save
 ```
 
 Using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import">ES6 imports</a>:
+
 ```typescript
-import 'tailwindcss-preflight';
+import "tailwindcss-preflight";
 ```
 
-## 🌐 CDN
-Using <a href="https://www.jsdelivr.com/">JSDELIVR</a>:
-```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss-preflight/preflightcss.css">
-```
-
-Using <a href="https://www.jsdelivr.com/">UNPKG</a>:
-```html
-<link rel="stylesheet" href="https://unpkg.com/tailwindcss-preflight/preflightcss.css">
-```
-
-## ❓ FAQ
-
-### Why did you create this package?
+## Why did you create this package?
 
 For anyone who wants to use <a href="https://tailwindcss.com/docs/preflight">Preflight</a> but doesn't feel like pulling in all of <a href="https://tailwindcss.com/">Tailwind CSS</a>.
-## ✨ Credits
+
+## Credits
 
 <a href="https://tailwindcss.com/docs/preflight">Preflight</a> is built on top of <a href="https://github.com/sindresorhus/modern-normalize">modern-normalize</a> which itself is based on <a href="https://github.com/necolas/normalize.css">normalize.css</a>.
 <br>
 All credit goes to the respective code authors:
+
 <table>
   <tr>
     <td align="center">
