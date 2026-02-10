@@ -1,12 +1,13 @@
 {
   "name": "tailwindcss-preflight",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "description": "A modern and opinionated alternative to CSS resets",
   "license": "MIT",
-  "style": "preflight.css",
   "repository": "https://github.com/grievouz/tailwindcss-preflight.git",
   "bugs": "https://github.com/grievouz/tailwindcss-preflight/issues",
   "homepage": "https://github.com/grievouz/tailwindcss-preflight#readme",
+  "main": "preflight.css",
+  "style": "preflight.css",
   "files": [
     "LICENSE",
     "LICENSE-preflight.txt",
