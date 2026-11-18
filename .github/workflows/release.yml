@@ -1,0 +1,103 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    if: github.repository == 'grievouz/tailwindcss-preflight'
+    uses: ./.github/workflows/test.yml
+
+  package:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.22.3'
+          package-manager-cache: false
+      - name: Validate exact tag, package version, changelog, main ancestry; build and smoke-test tarball
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: python3 scripts/prepare_release.py "$RELEASE_TAG"
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: release-package
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
+  github-release:
+    needs: package
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      # No checkout or execution of repository code in this write-permission job.
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: release-package
+          path: dist
+      - name: Verify asset checksum
+        working-directory: dist
+        run: sha256sum --check SHA256SUMS
+      - name: Confirm remote tag still resolves to the triggering commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          actual=$(gh api "repos/grievouz/tailwindcss-preflight/commits/$RELEASE_TAG" --jq .sha)
+          test "$actual" = "$RELEASE_SHA"
+      - name: Create GitHub release from existing validated tag (never overwrite)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: grievouz/tailwindcss-preflight
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: gh release create "$RELEASE_TAG" dist/*.tgz dist/SHA256SUMS --verify-tag --title "$RELEASE_TAG" --notes-file dist/release-notes.md
+
+  npm:
+    needs: github-release
+    # A valid release tag authorizes automatic publication; configure npm trust first.
+    environment: npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: release-package
+          path: dist
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.22.3'
+          package-manager-cache: false
+      - name: Verify asset checksum
+        working-directory: dist
+        run: sha256sum --check SHA256SUMS
+      - name: Confirm remote tag still resolves to the triggering commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          actual=$(gh api "repos/grievouz/tailwindcss-preflight/commits/$RELEASE_TAG" --jq .sha)
+          test "$actual" = "$RELEASE_SHA"
+      - name: Publish tested tarball using npm OIDC (no token, no lifecycle scripts)
+        run: npm publish dist/*.tgz --access public --provenance --ignore-scripts --tag latest --registry https://registry.npmjs.org
