@@ -11,7 +11,8 @@
 - Add package-content, offline install/entry-point and release-metadata checks to
   the existing structural and Chromium regression suite.
 - Add validated, tag-driven GitHub releases with the tested npm tarball and SHA-256
-  checksum. npm trusted publishing is separately opt-in and requires owner setup.
+  checksum, followed automatically by npm OIDC publication with provenance.
+  npm trusted publishing requires one-time owner setup before the release tag.
 
 No Tailwind dependency, CSS compilation or new runtime dependency is introduced.
 

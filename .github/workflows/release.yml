@@ -72,8 +72,7 @@ jobs:
 
   npm:
     needs: github-release
-    # OFF by default. Owner must configure npm trust + protected environment first.
-    if: vars.NPM_TRUSTED_PUBLISHING_ENABLED == 'true'
+    # A valid release tag authorizes automatic publication; configure npm trust first.
     environment: npm
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -92,5 +91,13 @@ jobs:
       - name: Verify asset checksum
         working-directory: dist
         run: sha256sum --check SHA256SUMS
+      - name: Confirm remote tag still resolves to the triggering commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          actual=$(gh api "repos/grievouz/tailwindcss-preflight/commits/$RELEASE_TAG" --jq .sha)
+          test "$actual" = "$RELEASE_SHA"
       - name: Publish tested tarball using npm OIDC (no token, no lifecycle scripts)
         run: npm publish dist/*.tgz --access public --provenance --ignore-scripts --tag latest --registry https://registry.npmjs.org
