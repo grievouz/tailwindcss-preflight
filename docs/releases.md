@@ -80,10 +80,11 @@ Do not supply tokens in chat or reuse a Homebrew tap credential.
    There is no `NPM_TRUSTED_PUBLISHING_ENABLED` variable to set.
 
 Setup status on 2026-11-19: GitHub's `npm` environment was independently read-back
-verified with custom tag policy `v*` and no reviewer gate. Julia reports npm's
-trusted-publisher save returned `Not Found`, and reload showed no saved publisher.
-**npm trust remains blocked/unverified; resolve it before pushing `v1.2.0`.**
-These external settings are not established by merging the PR.
+verified with custom tag policy `v*` and no reviewer gate. After owner passkey
+verification, npm's publisher was saved and verified after a full reload with
+`grievouz/tailwindcss-preflight`, `release.yml`, environment `npm`, and direct
+`npm publish` permitted. npm reports **Pending validation** until a first successful
+publication. A saved connection alone does not prove OIDC publication works.
 
 Reference: [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/).
 Do not add an `NPM_TOKEN` fallback or test OIDC by publishing an unapproved version.
@@ -110,3 +111,41 @@ replace an existing GitHub release. npm versions are immutable: if publication
 already succeeded, verify it rather than republishing; never move/delete tags or
 unpublish/overwrite a version to retry. Do not rewrite the release tag to retrigger
 publication. No automatic release version bump or scheduler exists.
+
+## One-time recovery of npm 1.2.0
+
+Release run [44423916921](https://github.com/grievouz/tailwindcss-preflight/actions/runs/44423916921)
+passed tests and packaging, created GitHub `v1.2.0` and both assets, then failed
+before npm authentication: `npm publish dist/*.tgz` was parsed as a GitHub
+shorthand. The corrected command uses an explicit local path, `./dist/*.tgz`.
+An offline, scripts-disabled npm publish **dry run** is now a regression test;
+it proves local-path handling, not npm authorization.
+
+Do not move/delete the existing tag, rebuild its package, or rerun all jobs.
+Rerunning the failed job of that original run still uses the old workflow code.
+The manual `Release` workflow on **main** provides a deliberately fixed 1.2.0
+recovery path, without a user-supplied ref, version or checksum:
+
+1. After owner merge/recovery approval, verify npm `1.2.0` is still absent.
+2. Temporarily add an exact **branch `main`** deployment policy to environment
+   `npm`, retaining the existing tag-only `v*` policy. This exception requires
+   explicit owner approval; it is not part of the normal tagged-release policy.
+3. Dispatch `release.yml` on `main`. It runs tests on the recovery workflow source,
+   downloads immutable original Actions artifact `14483930251` from run
+   `44423916921`. It checks original run identity and successful tests/package jobs,
+   the recorded artifact ZIP digest/manifest, the tarball SHA-256,
+   original tag commit, main ancestry, file allowlist and every packaged file byte
+   against the original tagged source. It neither rebuilds nor creates a release.
+4. The existing least-privilege npm job rechecks the original tag, requires an npm
+   HTTP 404 for `1.2.0` immediately before publication, requires exactly one local
+   archive, and publishes
+   exactly that verified artifact via OIDC. Provenance identifies the recovery
+   workflow's **main commit**, not the original release-tag commit. The byte checks
+   establish the link to the original source; do not describe these as identical refs.
+5. Remove **only the temporary main branch policy**, even if publication fails,
+   and verify `npm` is tag-only `v*` again. Verify npm version, provenance, artifact
+   integrity, offline entry points and both versioned/latest CDN CSS before declaring
+   the release complete. Never republish an already-existing npm version.
+
+This one-time dispatch does not fix/replace the failed historical Actions run;
+normal future release tags use the corrected local tarball path automatically.
