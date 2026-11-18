@@ -24,6 +24,35 @@ Using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 import "tailwindcss-preflight";
 ```
 
+## Customization
+
+The CSS works directly in browsers without Tailwind or a build step. By default,
+it uses the upstream font stacks and normal font feature/variation settings.
+You can optionally override them with native CSS custom properties:
+
+```css
+:root {
+  --default-font-family: Arial, sans-serif;
+  --default-font-feature-settings: "liga" 1;
+  --default-font-variation-settings: "wght" 400;
+  --default-mono-font-family: "Courier New", monospace;
+  --default-mono-font-feature-settings: normal;
+  --default-mono-font-variation-settings: normal;
+}
+```
+
+These overrides are optional; omitted variables use built-in fallbacks. Use valid
+CSS values for their corresponding properties. Font features/variations require
+support from the chosen font.
+
+**Release note:** this describes the source on this branch; the pinned `1.1.1`
+CDN URL above does not include these changes until a new version is published.
+
+## Development
+
+Run `python3 -m unittest discover -s tests -v` with Chromium/Chrome installed
+(or set `CHROME_BIN`). See [upstream provenance and update instructions](docs/upstream.md).
+
 ## Why did you create this package?
 
 For anyone who wants to use <a href="https://tailwindcss.com/docs/preflight">Preflight</a> but doesn't feel like pulling in all of <a href="https://tailwindcss.com/">Tailwind CSS</a>.
