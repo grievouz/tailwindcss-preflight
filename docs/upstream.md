@@ -54,6 +54,7 @@ Until a safe automated importer is added, use this explicit procedure:
    only the working branch in this repository. Merging and publishing are separate
    maintainer decisions.
 
-The suite requires Python 3.8+ and Chromium/Chrome (or `CHROME_BIN` pointing to it).
-There are no Python/npm dependencies and no Tailwind compilation step. Browser
+The suite requires Python 3.9+ and Chromium/Chrome (or `CHROME_BIN` pointing to it).
+There are no Python/npm package dependencies and no Tailwind compilation step.
+The full suite also requires Node.js and npm for offline package smoke tests. Browser
 checks currently cover Chromium, not Firefox/Safari or Japanese Windows rendering.

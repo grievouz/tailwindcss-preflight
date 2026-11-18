@@ -9,7 +9,7 @@
 ## Usage
 
 ```html
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss-preflight@1.1.1/preflight.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss-preflight@1.2.0/preflight.css" rel="stylesheet" />
 ```
 
 ## Installation
@@ -18,7 +18,7 @@
 npm install tailwindcss-preflight --save
 ```
 
-Using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import">ES6 imports</a>:
+Using a CSS-aware bundler (not plain Node.js runtime CSS loading):
 
 ```typescript
 import "tailwindcss-preflight";
@@ -45,13 +45,17 @@ These overrides are optional; omitted variables use built-in fallbacks. Use vali
 CSS values for their corresponding properties. Font features/variations require
 support from the chosen font.
 
-**Release note:** this describes the source on this branch; the pinned `1.1.1`
-CDN URL above does not include these changes until a new version is published.
+For CSS imports, use `@import "tailwindcss-preflight/preflight.css";`.
+The pinned CDN URL requires `1.2.0` to have been published to npm; a GitHub release
+alone does not update npm or CDNs.
 
 ## Development
 
 Run `python3 -m unittest discover -s tests -v` with Chromium/Chrome installed
-(or set `CHROME_BIN`). See [upstream provenance and update instructions](docs/upstream.md).
+(or set `CHROME_BIN`). Python 3.9+, Node.js 24 and npm are also required for offline
+package installation/entry-point checks. No dependency installation or CSS build
+is needed. See [upstream provenance](docs/upstream.md), [changelog](CHANGELOG.md)
+and [release procedure / trusted publishing setup](docs/releases.md).
 
 ## Why did you create this package?
 

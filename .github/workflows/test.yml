@@ -2,7 +2,9 @@ name: Test standalone CSS
 
 on:
   push:
+    branches: ['**']
   pull_request:
+  workflow_call:
 
 permissions:
   contents: read
@@ -12,10 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, Node 24
         with:
           persist-credentials: false
-      - name: Check standalone CSS and browser behavior
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0, Node 24
+        with:
+          node-version: '24.22.3'
+          package-manager-cache: false
+      - name: Check standalone CSS, browser behavior, package and release metadata
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: python3 -m unittest discover -s tests -v
