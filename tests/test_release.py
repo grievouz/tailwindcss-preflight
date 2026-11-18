@@ -24,7 +24,7 @@ class ReleaseMetadata(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "package.json").write_text('{"version":"1.2.0"}')
-            (root / "README.md").write_text("tailwindcss-preflight@1.2.0/preflight.css")
+            (root / "README.md").write_text("https://cdn.jsdelivr.net/npm/tailwindcss-preflight@latest/preflight.css")
             for changelog in ("## 1.1.1\nold", "## 1.2.0\n", "## 1.2.0\none\n## 1.2.0\ntwo"):
                 (root / "CHANGELOG.md").write_text(changelog)
                 with self.subTest(changelog=changelog), self.assertRaises(ValueError):
@@ -34,3 +34,13 @@ class ReleaseMetadata(unittest.TestCase):
             (root / "README.md").write_text("tailwindcss-preflight@1.1.1/preflight.css")
             with self.assertRaises(ValueError):
                 release_notes(root, "v1.2.0")
+
+    def test_latest_cdn_url_survives_future_version_bumps(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "README.md").write_text("https://cdn.jsdelivr.net/npm/tailwindcss-preflight@latest/preflight.css")
+            for version in ("1.2.1", "2.0.0"):
+                (root / "package.json").write_text(json.dumps({"version": version}))
+                (root / "CHANGELOG.md").write_text(f"## {version}\nValid notes\n")
+                with self.subTest(version=version):
+                    self.assertEqual(release_notes(root, "v" + version), "Valid notes\n")

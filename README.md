@@ -9,7 +9,7 @@
 ## Usage
 
 ```html
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss-preflight@1.2.0/preflight.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss-preflight@latest/preflight.css" rel="stylesheet" />
 ```
 
 ## Installation
@@ -46,8 +46,10 @@ CSS values for their corresponding properties. Font features/variations require
 support from the chosen font.
 
 For CSS imports, use `@import "tailwindcss-preflight/preflight.css";`.
-The pinned CDN URL requires `1.2.0` to have been published to npm; a GitHub release
-alone does not update npm or CDNs.
+The CDN URL follows npm’s `latest` release automatically (subject to CDN caching),
+including future major versions, so it does not need a version edit for each release.
+For reproducible production builds, replace `latest` with an exact published version.
+A GitHub release alone does not update npm or CDNs.
 
 ## Development
 
