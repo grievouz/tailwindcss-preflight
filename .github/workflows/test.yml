@@ -1,0 +1,20 @@
+name: Test standalone CSS
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check standalone CSS and browser behavior
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: python3 -m unittest discover -s tests -v
