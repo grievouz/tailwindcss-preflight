@@ -25,8 +25,8 @@ def release_notes(root, tag):
     notes = changelog.split(heading, 1)[1].split("\n## ", 1)[0].strip()
     if not notes:
         raise ValueError("Release notes must not be empty")
-    if f"tailwindcss-preflight@{version}/preflight.css" not in (root / "README.md").read_text():
-        raise ValueError("README CDN version must match package version")
+    if "https://cdn.jsdelivr.net/npm/tailwindcss-preflight@latest/preflight.css" not in (root / "README.md").read_text():
+        raise ValueError("README must document the auto-updating latest CDN URL")
     return notes + "\n"
 
 
@@ -56,7 +56,7 @@ def main():
         "\n## Distribution\n\n"
         "Attached is the tested npm tarball with its SHA-256 checksum. "
         "A GitHub release does not by itself publish to npm/CDNs. "
-        "Check npm for this version before using the pinned CDN URL.\n"
+        "The README CDN URL follows npm latest, subject to CDN caching.\n"
     ))
     print("Release assets verified for", args.tag, "at", commit)
 

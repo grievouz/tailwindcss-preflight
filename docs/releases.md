@@ -22,7 +22,7 @@ and `1.1.1`, and a single GitHub tag/release `v1.1.1` at
 `e032fdf0158565e247169966bc484a036331b07a`. npm's `1.1.1` gitHead matches that
 commit, but its committed package.json says `1.0.1`. Existing main subsequently
 said `1.1.1`. No old tag, GitHub release or npm version is changed by this PR.
-The `1.2.0` preparation realigns package/tag/changelog/README for future releases.
+The `1.2.0` preparation realigns package/tag/changelog for future releases.
 
 ## Tag-driven pipeline
 
@@ -34,7 +34,7 @@ variable or separate per-release environment reviewer approval.
 
 1. Run the full existing + new test suite through the reusable test workflow.
 2. Require a stable `vMAJOR.MINOR.PATCH` tag equal to package.json, a nonempty
-   unique matching changelog section, matching pinned README CDN version, a clean
+   unique matching changelog section, the auto-updating README CDN URL, a clean
    tracked checkout, and the exact tagged commit reachable from `origin/main`.
    Only then build a tarball, inspect its exact allowlist and both licenses,
    install it offline with lifecycle scripts disabled, resolve/read its CSS entry,
