@@ -3,6 +3,8 @@ name: Release
 on:
   push:
     tags: ['v*']
+  # One-time recovery of the existing 1.2.0 asset; no new tag/release or rebuild.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,6 +19,7 @@ jobs:
     uses: ./.github/workflows/test.yml
 
   package:
+    if: github.event_name == 'push'
     needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -70,9 +73,36 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
         run: gh release create "$RELEASE_TAG" dist/*.tgz dist/SHA256SUMS --verify-tag --title "$RELEASE_TAG" --notes-file dist/release-notes.md
 
+  recovery-package:
+    permissions:
+      contents: read
+      actions: read
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify original run and immutable artifact, checksum, tag and source bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/recover_release.py
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: release-package
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
   npm:
-    needs: github-release
-    # A valid release tag authorizes automatic publication; configure npm trust first.
+    needs: [github-release, recovery-package]
+    if: >-
+      always() && !cancelled() &&
+      (needs.github-release.result == 'success' || needs.recovery-package.result == 'success')
+    # Recovery additionally requires a temporary owner-approved main environment policy.
     environment: npm
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -94,10 +124,19 @@ jobs:
       - name: Confirm remote tag still resolves to the triggering commit
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.ref_name }}
-          RELEASE_SHA: ${{ github.sha }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && 'v1.2.0' || github.ref_name }}
+          RELEASE_SHA: ${{ github.event_name == 'workflow_dispatch' && '73c53a0511de520082e4e5924dd3b63929135936' || github.sha }}
         run: |
           actual=$(gh api "repos/grievouz/tailwindcss-preflight/commits/$RELEASE_TAG" --jq .sha)
           test "$actual" = "$RELEASE_SHA"
-      - name: Publish tested tarball using npm OIDC (no token, no lifecycle scripts)
-        run: npm publish dist/*.tgz --access public --provenance --ignore-scripts --tag latest --registry https://registry.npmjs.org
+      - name: Confirm npm 1.2.0 is absent immediately before recovery publication
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          status=$(curl --silent --show-error --output registry-version.json --write-out '%{http_code}' https://registry.npmjs.org/tailwindcss-preflight/1.2.0)
+          test "$status" = 404
+      - name: Publish exactly one tested local tarball using npm OIDC (no token, no lifecycle scripts)
+        run: |
+          set -- ./dist/*.tgz
+          test "$#" -eq 1
+          test -f "$1"
+          npm publish "$1" --access public --provenance --ignore-scripts --tag latest --registry https://registry.npmjs.org
