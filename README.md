@@ -41,27 +41,6 @@ You can optionally override them with native CSS custom properties:
 }
 ```
 
-These overrides are optional; omitted variables use built-in fallbacks. Use valid
-CSS values for their corresponding properties. Font features/variations require
-support from the chosen font.
-
-For CSS imports, use `@import "tailwindcss-preflight/preflight.css";`.
-The CDN URL follows npm’s `latest` release automatically (subject to CDN caching),
-including future major versions, so it does not need a version edit for each release.
-For reproducible production builds, replace `latest` with an exact published version.
-A GitHub release alone does not update npm or CDNs.
-
-## Development
-
-Run `python3 -m unittest discover -s tests -v` with Chromium/Chrome installed
-(or set `CHROME_BIN`). Python 3.9+, Node.js 24 and npm are also required for offline
-package installation/entry-point checks. No dependency installation or CSS build
-is needed. See [upstream provenance](docs/upstream.md) and [changelog](CHANGELOG.md).
-
-## Why did you create this package?
-
-For anyone who wants to use <a href="https://tailwindcss.com/docs/preflight">Preflight</a> but doesn't feel like pulling in all of <a href="https://tailwindcss.com/">Tailwind CSS</a>.
-
 ## Credits
 
 <a href="https://tailwindcss.com/docs/preflight">Preflight</a> is built on top of <a href="https://github.com/sindresorhus/modern-normalize">modern-normalize</a> which itself is based on <a href="https://github.com/necolas/normalize.css">normalize.css</a>.
