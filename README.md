@@ -56,8 +56,7 @@ A GitHub release alone does not update npm or CDNs.
 Run `python3 -m unittest discover -s tests -v` with Chromium/Chrome installed
 (or set `CHROME_BIN`). Python 3.9+, Node.js 24 and npm are also required for offline
 package installation/entry-point checks. No dependency installation or CSS build
-is needed. See [upstream provenance](docs/upstream.md), [changelog](CHANGELOG.md)
-and [release procedure / trusted publishing setup](docs/releases.md).
+is needed. See [upstream provenance](docs/upstream.md) and [changelog](CHANGELOG.md).
 
 ## Why did you create this package?
 
